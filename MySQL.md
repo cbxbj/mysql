@@ -132,7 +132,7 @@ InnoDB的数据是基于索引组织的，**行锁是通过对索引上的索引
 
 - 行锁（Record Lock）：锁定单个行记录的锁，防止其他事务对此行进行update和delete。在 **RC、RR隔离级别**下都支持。
 
-  ![](.\img\001.png)
+  ![](https://github.com/cbxbj/mysql/blob/master/img/001.png)
 
 - 间隙锁（Gap Lock）：锁定索引记录间隙（不含该记录），确保索引记录间隙不变，防止其他事 务在这个间隙进行insert，产生幻读。在**RR隔离级别**下都支持。
 
