@@ -136,11 +136,11 @@ InnoDB的数据是基于索引组织的，**行锁是通过对索引上的索引
 
 - 间隙锁（Gap Lock）：锁定索引记录间隙（不含该记录），确保索引记录间隙不变，防止其他事 务在这个间隙进行insert，产生幻读。在**RR隔离级别**下都支持。
 
-  ![](.\img\002.png)
+  ![](https://github.com/cbxbj/mysql/blob/master/img/002.png)
 
 - 临键锁（Next-Key Lock）：行锁和间隙锁组合，同时锁住数据，并锁住数据前面的间隙Gap。 在**RR隔离级别**下支持。
 
-  ![](.\img\003.png)
+  ![](https://github.com/cbxbj/mysql/blob/master/img/003.png)
 
 #### 行锁
 
@@ -200,9 +200,9 @@ performance_schema.data_locks;
 
 #### 图示
 
-![](.\img\004.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/004.png)
 
-![](.\img\005.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/005.png)
 
 #### 详解
 
@@ -237,7 +237,7 @@ performance_schema.data_locks;
 
 MySQL5.5 版本开始，默认使用InnoDB存储引擎，它擅长事务处理，具有崩溃恢复特性，在日常开发 中使用非常广泛。下面是InnoDB架构图，左侧为内存结构，右侧为磁盘结构。
 
-![](.\img\006.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/006.png)
 
 #### 内存结构
 
@@ -250,7 +250,7 @@ MySQL5.5 版本开始，默认使用InnoDB存储引擎，它擅长事务处理�
 
 ##### Buffer Pool
 
-![](.\img\007.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/007.png)
 
 InnoDB存储引擎基于磁盘文件存储，访问物理硬盘和在内存中进行访问，速度相差很大，为了尽可能 弥补这两者之间的I/O效率的差值，就需要把经常使用的数据加载到缓冲池中，避免每次访问都进行磁 盘I/O。
 
@@ -276,17 +276,17 @@ show variables like 'innodb_buffer_pool_size';
 
 注在5.x版本无此概念，5.x有插入缓冲区(Insert Buffer),8.0有Change Buffer
 
-![](.\img\008.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/008.png)
 
 Change Buffer，更改缓冲区（针对于非唯一二级索引页），在执行DML语句时，如果这些数据Page 没有在Buffer Pool中，不会直接操作磁盘，而会将数据变更存在更改缓冲区 Change Buffer 中，在未来数据被读取时，再将数据合并恢复到Buffer Pool中，再将合并后的数据刷新到磁盘中。
 
-![](.\img\009.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/009.png)
 
 与聚集索引不同，二级索引通常是非唯一的，并且以相对随机的顺序插入二级索引。同样，删除和更新 可能会影响索引树中不相邻的二级索引页，如果每一次都操作磁盘，会造成大量的磁盘IO。有了 ChangeBuffer之后，我们可以在缓冲池中进行合并处理，减少磁盘IO。
 
 ##### Adaptive Hash Index
 
-![](.\img\010.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/010.png)
 
 自适应hash索引，用于优化对Buffer Pool数据的查询。MySQL的innoDB引擎中虽然没有直接支持 hash索引，但是给我们提供了一个功能就是这个自适应hash索引。因为前面我们讲到过，hash索引在 进行等值匹配时，一般性能是要高于B+树的，因为hash索引一般只需要一次IO即可，而B+树，可能需 要几次匹配，所以hash索引的效率要高，但是hash索引又不适合做范围查询、模糊匹配等。
 
@@ -304,7 +304,7 @@ show variables like 'innodb_adaptive_hash_index'
 
 ##### Log Buffer
 
-![](.\img\011.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/011.png)
 
 Log Buffer：日志缓冲区，用来保存要写入到磁盘中的log日志数据（redo log 、undo log）， 默认大小为 16MB，日志缓冲区的日志会定期刷新到磁盘中。如果需要更新、插入或删除许多行的事 务，增加日志缓冲区的大小可以节省磁盘 I/O。
 
@@ -330,7 +330,7 @@ Log Buffer：日志缓冲区，用来保存要写入到磁盘中的log日志数�
 
 ##### System Tablespace/File-Per-Table Tablespaces
 
-![](.\img\012.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/012.png)
 
 **System Tablespace**
 
@@ -358,7 +358,7 @@ show variables like 'innodb_file_per_table';
 
 ##### General Tablespaces/ Undo Tablespaces/Temporary Tablespaces
 
-![](.\img\013.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/013.png)
 
 **General Tablespaces**
 
@@ -386,7 +386,7 @@ CREATE TABLE table_name TABLESPACE ts_name;
 
 ##### Doublewrite Buffer Files/Redo Log
 
-![](.\img\014.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/014.png)
 
 **Doublewrite Buffer Files**
 
@@ -402,7 +402,7 @@ CREATE TABLE table_name TABLESPACE ts_name;
 
 #### 后台线程
 
-![](.\img\015.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/015.png)
 
 在InnoDB的后台线程中，分为4类，分别是：
 
@@ -455,13 +455,13 @@ show engine innodb status \G;
 - 隔离性（Isolation）：数据库系统提供的隔离机制，保证事务在不受外部并发操作影响的独立环 境下运行
 - 持久性（Durability）：事务一旦提交或回滚，它对数据库中的数据的改变就是永久的。
 
-![](.\img\016.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/016.png)
 
 #### redolog
 
 重做日志，记录的是事务提交时数据页的物理修改，**是用来实现事务的持久性**。
 
-![](.\img\017.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/017.png)
 
 该日志文件由两部分组成：重做日志缓冲（redo log buffer）以及重做日志文件（redo log file）,前者是在内存中，后者在磁盘中。当事务提交之后会把所有修改信息都存到该日志文件中, 用 于在刷新脏页到磁盘,发生错误时, 进行数据恢复使用。
 
@@ -509,7 +509,7 @@ Undo log存储：**undo log采用段的方式进行管理和记录**，存放在
 
 ##### 隐藏字段
 
-![](.\img\018.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/018.png)
 
 | 隐藏字段    | 含义                                                         |
 | ----------- | ------------------------------------------------------------ |
@@ -531,7 +531,7 @@ ibd2sdi xxx.ibd
 
 ###### 版本链
 
-![](.\img\019.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/019.png)
 
 > 不同事务或相同事务对同一条记录进行修改，会导致该记录的undolog生成一条 记录版本链表，链表的头部是最新的旧记录，链表尾部是最早的旧记录
 
@@ -548,7 +548,7 @@ ReadView中包含了四个核心字段：
 | max_trx_id     | 预分配事务ID，当前最大事务ID+1（因为事务ID是自增的） |
 | creator_trx_id | ReadView创建者的事务ID                               |
 
-![](.\img\020.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/020.png)
 
 trx_id：代表当前事务id
 
@@ -566,7 +566,7 @@ trx_id：代表当前事务id
 
 ###### RC隔离级别
 
-![](.\img\021.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/021.png)
 
 上图中
 
@@ -574,7 +574,7 @@ trx_id：代表当前事务id
 - 再匹配第二条undolog中的数据，这条 记录对应的trx_id为3，也就是将3带入右侧的匹配规则中。①不满足 ②不满足 ③不满足 ④也 不满足 ，都不满足，则继续匹配undo log版本链的下一条
 - 再匹配，这条记录对应的trx_id为2，也就是将2带入右侧的匹配规则中。①不满足 ②满足 终止匹配，此次快照 读，返回的数据就是版本链中记录的这条数据
 
-![](.\img\022.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/022.png)
 
 上图中
 
@@ -585,11 +585,11 @@ trx_id：代表当前事务id
 
 RR隔离级别下，仅在事务中第一次执行快照读时生成ReadView，后续复用该ReadView。 而RR 是可 重复读，在一个事务中，执行两次相同的select语句，查询到的结果是一样的
 
-![](.\img\023.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/023.png)
 
 #### 总结
 
-![](.\img\024.png)
+![](https://github.com/cbxbj/mysql/blob/master/img/024.png)
 
 ## MySQL管理
 
